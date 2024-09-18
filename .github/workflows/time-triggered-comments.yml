@@ -27,7 +27,7 @@ jobs:
         uses: nbaztec/add-pr-review-comment@v1
         if: env.HOUR > 12
         with:
-          message: |
+          comments: |
             [{"path":"","line":,"text":"After hours commit!","side":"RIGHT"}]
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
