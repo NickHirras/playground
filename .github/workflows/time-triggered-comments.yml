@@ -27,16 +27,14 @@ jobs:
         if: env.HOUR > 12
         with:
           message: |
-            **Hello**
+            **⚠ After Hours PR**
             This PR was created in the afternoon.
-            ⚠
-            @NickHirras
-            !
+            
+            @NickHirras please review this!
       - uses: mshick/add-pr-comment@v2
         if: env.HOUR <= 12
         with:
           message: |
-            **Hello**
+            **☕Hello**
             This PR was created in the morning.
-            ☕
-            !
+            
