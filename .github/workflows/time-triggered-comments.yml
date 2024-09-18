@@ -29,8 +29,8 @@ jobs:
         with:
           message: |
             [{"path":"","line":,"text":"After hours commit!","side":"RIGHT"}]
-          # repo-token: ${{ secrets.GITHUB_TOKEN }}
-          # repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
           allow-repeats: false # This is the default
       # - name: adding after-hours comment for visibility
       #   uses: mshick/add-pr-comment@v2
