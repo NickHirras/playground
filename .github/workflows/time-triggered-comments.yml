@@ -20,21 +20,24 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: get day (Mon, Tues, ...) and hour (0..23)
+      - name: set current env.DAY (Mon, Tue, ...) and env.HOUR (0..23) in eastern timezone
         shell: bash
         run: echo "DAY=$(TZ=":America/New_York" date +'%a')" >> $GITHUB_ENV && echo "HOUR=$(TZ=":America/New_York" date +'%H')" >> $GITHUB_ENV
-      - uses: mshick/add-pr-comment@v2
+      - name: adding after-hours comment for visibility
+        uses: mshick/add-pr-comment@v2
         if: env.HOUR > 12
         with:
+          refresh-message-position: true
           message: |
             **⚠ After Hours PR**
             This PR was created in the afternoon.
             
             @NickHirras please review this!
-      - uses: mshick/add-pr-comment@v2
+      - name: adding in-hours comment just for demonstration, wouldn't need this
+        uses: mshick/add-pr-comment@v2
         if: env.HOUR <= 12
         with:
+          refresh-message-position: true
           message: |
             **☕Hello**
             This PR was created in the morning.
-            
