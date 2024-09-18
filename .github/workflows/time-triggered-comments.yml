@@ -28,7 +28,7 @@ jobs:
         if: env.HOUR > 12
         with:
           comments: |
-            [{"path":"","line":,"text":"After hours commit!","side":"RIGHT"}]
+            [{"path":"*","line":0,"text":"After hours commit!","side":"RIGHT"}]
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
           allow-repeats: false # This is the default
