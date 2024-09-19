@@ -18,7 +18,8 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: write
+      pull-requests: write  # Grant permission to comment on PRs
+      contents: read        # Allow read access to the repo content
     steps:
       - name: set current env.DAY (Mon, Tue, ...) and env.HOUR (0..23) in eastern timezone
         shell: bash
