@@ -23,20 +23,24 @@ jobs:
       - name: set current env.DAY (Mon, Tue, ...) and env.HOUR (0..23) in eastern timezone
         shell: bash
         run: echo "DAY=$(TZ=":America/New_York" date +'%a')" >> $GITHUB_ENV && echo "HOUR=$(TZ=":America/New_York" date +'%H')" >> $GITHUB_ENV
-      - name: find a file from this commit to anchor a review comment to
-        id: file_from_commit
-        run: echo "::set-output name=file::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | head -n 1)"
-      - name: print the file_file_commit name
-        run: echo ${{ steps.file_from_commit.outputs.file }}
-      - name: add a review comment to file_from_commit
-        uses: nbaztec/add-pr-review-comment@v1
-        with:
-          comments: |
-            [{"path":"../../README.md","subject_type":"file","comments":"This is a test comment","side":"RIGHT"}]
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
-          allow-repeats: false # This is the default
-      # - name: adding after-hours review comment
+      
+      - name: Get the first file in the commit
+        id: get_first_file
+        run: |
+          # Get the latest commit SHA
+          COMMIT_SHA=$(git rev-parse HEAD)
+          
+          # List files in the commit
+          FIRST_FILE=$(git diff-tree --no-commit-id --name-only -r $COMMIT_SHA | head -n 1)
+          
+          echo "First file: $FIRST_FILE"
+          echo "::set-output name=first_file::$FIRST_FILE"
+
+      - name: Use the first file
+        run: |
+          echo "The first file in the commit is: ${{ steps.get_first_file.outputs.first_file }}"
+      
+          # - name: adding after-hours review comment
       #   uses: nbaztec/add-pr-review-comment@v1
       #   if: env.HOUR > 12
       #   with:
