@@ -45,9 +45,11 @@ jobs:
           if [ -z "$FIRST_FILE" ]; then
             echo "No files found in the latest commit."
             echo "first_file=" >> $GITHUB_ENV
+            echo "commit_id=" >> $GITHUB_ENV
           else
             echo "First file: $FIRST_FILE"
             echo "first_file=$FIRST_FILE" >> $GITHUB_ENV
+            echo "commit_id=$COMMIT_SHA" >> $GITHUB_ENV
           fi
 
       - name: Add Review Comment
@@ -56,11 +58,12 @@ jobs:
           FILE_NAME="${{ env.first_file }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
           COMMENT="This is an automated comment for the file: ${FILE_NAME}"
+          COMMIT_SHA=$(git rev-parse HEAD)
 
           curl -s -X POST "${GITHUB_API_URL}/repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
-          -d "{\"body\": \"${COMMENT}\", \"path\": \"${FILE_NAME}\", \"position\": 1}"
+          -d "{\"body\": \"${COMMENT}\", \"commit_id\": \"${{ env.commit_id }}\", \"path\": \"${FILE_NAME}\", \"subject_type\": \"file\"}"
       
       # - name: adding after-hours review comment
       #   uses: nbaztec/add-pr-review-comment@v1
