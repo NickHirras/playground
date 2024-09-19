@@ -23,7 +23,12 @@ jobs:
       - name: set current env.DAY (Mon, Tue, ...) and env.HOUR (0..23) in eastern timezone
         shell: bash
         run: echo "DAY=$(TZ=":America/New_York" date +'%a')" >> $GITHUB_ENV && echo "HOUR=$(TZ=":America/New_York" date +'%H')" >> $GITHUB_ENV
-      
+
+      - name: Checkout PR
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for accurate diff
+
       - name: Get the first file in the commit
         id: get_first_file
         run: |
@@ -40,7 +45,7 @@ jobs:
         run: |
           echo "The first file in the commit is: ${{ steps.get_first_file.outputs.first_file }}"
       
-          # - name: adding after-hours review comment
+      # - name: adding after-hours review comment
       #   uses: nbaztec/add-pr-review-comment@v1
       #   if: env.HOUR > 12
       #   with:
