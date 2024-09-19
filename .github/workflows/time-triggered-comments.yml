@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [ "main" ] # change to "major"
+    branches: [ "major" ]
 
   workflow_dispatch:
 
