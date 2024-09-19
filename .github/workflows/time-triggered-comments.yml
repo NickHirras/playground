@@ -63,23 +63,8 @@ jobs:
             COMMIT_ID="${{ github.event.pull_request.head.sha }}"
             PR_NUMBER="${{ github.event.pull_request.number }}"
 
-            # Using a 'heredoc' to create a multi-line comment
-            IFS='' read -r -d '' COMMENT <<"EOF"
-            **⚠ PR to Major During Freeze ⚠**
-            
-            This PR to Major was created during the EnCompass PR freeze hours. It will
-            require additional review and approval from the EnCompass End-to-End team. 
-            Please ensure that these changes are critical and require immediate attention. 
-            If not, please consider resubmitting this PR after the freeze hours have ended. 
-
-            PRs to Major should be avoided during Monday 12pm - Tuesday 3pm eastern time,
-            every other week.
-
-            Thank you!
-
-            @danielreib, @chloejackson2010, @maryelenkw, @bblocker, @vsreddyn, @NickHirras
-
-            EOF
+            # Read in the contents of the file PR_REVIEW_COMMENT.md
+            COMMENT=$(<.github/workflows/PR_REVIEW_COMMENT.md)
 
             #
             # Post the review comment to the PR
