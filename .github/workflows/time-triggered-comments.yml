@@ -33,27 +33,22 @@ jobs:
       - name: Get the first file in the commit
         id: get_first_file
         run: |
-          # Get the latest commit SHA
-          COMMIT_SHA=$(git rev-parse HEAD)
-          
           # Check if there are any files in the commit
           FIRST_FILE=$(git diff --name-only HEAD^ HEAD | head -n 1)
           
           if [ -z "$FIRST_FILE" ]; then
             echo "No files found in the latest commit."
             echo "first_file=" >> $GITHUB_ENV
-            echo "commit_id=" >> $GITHUB_ENV
           else
             echo "First file: $FIRST_FILE"
             echo "first_file=$FIRST_FILE" >> $GITHUB_ENV
-            echo "commit_id=$COMMIT_SHA" >> $GITHUB_ENV
           fi
 
       - name: Add Review Comment
         if: env.first_file != ''
         run: |
           FILE_NAME="${{ env.first_file }}"
-          COMMIT_ID="${{ env.commit_id }}"
+          COMMIT_ID="${{ github.event.pull_request.head.sha }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
           COMMENT="This is an automated comment for the file: ${FILE_NAME} from commit: ${COMMIT_ID}"
 
