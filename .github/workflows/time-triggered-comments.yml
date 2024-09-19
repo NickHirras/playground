@@ -29,17 +29,25 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history for accurate diff
 
+      - name: List all the files in the commit
+        run: git diff --name-only HEAD^ HEAD
+
       - name: Get the first file in the commit
         id: get_first_file
         run: |
           # Get the latest commit SHA
           COMMIT_SHA=$(git rev-parse HEAD)
           
-          # List files in the commit
-          FIRST_FILE=$(git diff-tree --no-commit-id --name-only -r $COMMIT_SHA | head -n 1)
+          # Check if there are any files in the commit
+          FIRST_FILE=$(git diff --name-only HEAD^ HEAD | head -n 1)
           
-          echo "First file: $FIRST_FILE"
-          echo "first_file=$FIRST_FILE" >> $GITHUB_ENV
+          if [ -z "$FIRST_FILE" ]; then
+            echo "No files found in the latest commit."
+            echo "first_file=" >> $GITHUB_ENV
+          else
+            echo "First file: $FIRST_FILE"
+            echo "first_file=$FIRST_FILE" >> $GITHUB_ENV
+          fi
 
       - name: Use the first file
         run: |
