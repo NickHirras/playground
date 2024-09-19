@@ -60,7 +60,7 @@ jobs:
           # Adjust this logic as necessary.
           #
           #if [ "$DAY" == "Mon" ] && [ $HOUR -ge 12 ] || [ "$DAY" == "Tue" ] && [ $HOUR -lt 15 ] && [ "$EVEN_WEEK" == true ]; then
-          if [ "$DAY" == "Thu" ] && [ $HOUR -ge 12 ] || [ "$DAY" == "Fri" ] && [ $HOUR -lt 15 ] && [ "$EVEN_WEEK" == false ]; then
+          if [ "$EVEN_WEEK" == false ] && (([ "$DAY" == "Thu" ] && [ $HOUR -ge 12 ]) || ([ "$DAY" == "Fri" ] && [ $HOUR -lt 15 ])); then
             COMMIT_ID="${{ github.event.pull_request.head.sha }}"
             PR_NUMBER="${{ github.event.pull_request.number }}"
 
