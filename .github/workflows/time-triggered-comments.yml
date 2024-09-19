@@ -69,7 +69,7 @@ jobs:
             # and escape newlines so we can use it in the JSON payload
             #
             RAW_COMMENT=$(<".github/workflows/PR_REVIEW_COMMENT.md")
-            COMMENT=$(echo "$RAW_COMMENT" | tr '\n' '\\n' | tr '\r' '')
+            COMMENT=$(echo "$RAW_COMMENT" | tr '\n' '\\n' | tr -d '\r')
 
             #
             # Post the review comment to the PR
