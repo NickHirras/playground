@@ -44,43 +44,16 @@ jobs:
             echo "first_file=$FIRST_FILE" >> $GITHUB_ENV
           fi
 
-      - name: Add Review Comment
-        if: env.first_file != ''
+      - name: Add Review Comment During Freeze Hours
+        if: env.first_file != '' && env.HOUR > 12
         run: |
           FILE_NAME="${{ env.first_file }}"
           COMMIT_ID="${{ github.event.pull_request.head.sha }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
-          COMMENT="This is an automated comment for the file: ${FILE_NAME} from commit: ${COMMIT_ID}"
+          COMMENT='**⚠ After Hours PR**\n\nPlease review this @NickHirras'
 
           curl -s -X POST "${GITHUB_API_URL}/repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           -d "{\"body\": \"${COMMENT}\", \"path\": \"${FILE_NAME}\", \"commit_id\": \"${COMMIT_ID}\", \"subject_type\": \"file\"}"
       
-      # - name: adding after-hours review comment
-      #   uses: nbaztec/add-pr-review-comment@v1
-      #   if: env.HOUR > 12
-      #   with:
-      #     comments: |
-      #       [{"path":"../README.md","subject_type":"file","body":"After hours commit!","side":"RIGHT"}]
-      #     repo-token: ${{ secrets.GITHUB_TOKEN }}
-      #     repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
-      #     allow-repeats: false # This is the default
-      # - name: adding after-hours comment for visibility
-      #   uses: mshick/add-pr-comment@v2
-      #   if: env.HOUR > 12
-      #   with:
-      #     refresh-message-position: true
-      #     message: |
-      #       **⚠ After Hours PR**
-      #       This PR was created in the afternoon.
-            
-      #       @NickHirras please review this!
-      # - name: adding in-hours comment just for demonstration, wouldn't need this
-      #   uses: mshick/add-pr-comment@v2
-      #   if: env.HOUR <= 12
-      #   with:
-      #     refresh-message-position: true
-      #     message: |
-      #       **☕Hello**
-      #       This PR was created in the morning.
