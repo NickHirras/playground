@@ -58,7 +58,7 @@ jobs:
           COMMENT="This is an automated comment for the file: ${FILE_NAME}"
 
           curl -s -X POST "${GITHUB_API_URL}/repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" \
-          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           -d "{\"body\": \"${COMMENT}\", \"path\": \"${FILE_NAME}\", \"position\": 1}"
       
