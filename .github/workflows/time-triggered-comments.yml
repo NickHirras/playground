@@ -55,12 +55,12 @@ jobs:
           FILE_NAME="${{ env.first_file }}"
           COMMIT_ID="${{ env.commit_id }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
-          COMMENT="This is an automated comment for the file: ${FILE_NAME} from commit: ${COMMIT_ID}"
+          COMMENT="This is an automated comment for the file: ${ FILE_NAME } from commit: ${ COMMIT_ID }"
 
-          curl -s -X POST "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" \
-          -H "Authorization: token $GITHUB_TOKEN" \
+          curl -s -X POST "${ GITHUB_API_URL }/repos/${{ github.repository }}/pulls/${ PR_NUMBER }/comments" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
-          -d "{\"body\": \"${COMMENT}\", \"path\": \"${FILE_NAME}\", \"commit_id\": \"${COMMIT_ID}\", \"subject_type\": \"file\"}"
+          -d "{\"body\": \"${ COMMENT }\", \"path\": \"${ FILE_NAME }\", \"commit_id\": \"${ COMMIT_ID }\", \"subject_type\": \"file\"}"
       
       # - name: adding after-hours review comment
       #   uses: nbaztec/add-pr-review-comment@v1
