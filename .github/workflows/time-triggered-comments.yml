@@ -2,50 +2,90 @@ name: CI
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ] # change to "major"
 
   workflow_dispatch:
 
 jobs:
-  notify_about_prs_after_noon:
+  review_prs_to_major_during_freeze:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write  # Grant permission to comment on PRs
       contents: read        # Allow read access to the repo content
     steps:
-      - name: Set Current env.DAY (Mon, Tue, ...) and env.HOUR (0..23) in Eastern Timezone
-        shell: bash
-        run: echo "DAY=$(TZ=":America/New_York" date +'%a')" >> $GITHUB_ENV && echo "HOUR=$(TZ=":America/New_York" date +'%H')" >> $GITHUB_ENV
-
       - name: Checkout PR
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Find First File In Commit
+      - name: Add Review Comment During PR-Freeze Hours
         id: get_first_file
         run: |
+          #
           # Check if there are any files in the commit
+          # Exit if this is an empty commit, we need a file to anchor our review comment on.
+          #
           FIRST_FILE=$(git diff --name-only HEAD^ HEAD | head -n 1)
-          
           if [ -z "$FIRST_FILE" ]; then
             echo "No files found in the latest commit."
-            echo "first_file=" >> $GITHUB_ENV
-          else
-            echo "First file: $FIRST_FILE"
-            echo "first_file=$FIRST_FILE" >> $GITHUB_ENV
+            exit 1
           fi
 
-      - name: Add Review Comment During Freeze Hours
-        if: env.first_file != '' && env.HOUR >= 12
-        run: |
-          FILE_NAME="${{ env.first_file }}"
-          COMMIT_ID="${{ github.event.pull_request.head.sha }}"
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-          COMMENT='**⚠ After Hours PR**\n\nPlease review this @NickHirras'
+          #
+          # Figure out date and time values we need to enforce the PR freeze hours
+          # DAY will be abbreviated day of the week (e.g. Mon, Tue, Wed, etc.)
+          # HOUR will be the current hour in 24-hour format (e.g. 0-23)
+          # WEEK will be the current week number of the year (e.g. 0-53)
+          # EVEN_WEEK will be a boolean value indicating if the current week is even or odd, for bi-weekly freeze hours
+          #
+          DAY=$(TZ=":America/New_York" date +'%a')
+          HOUR=$(TZ=":America/New_York" date +'%H')
+          WEEK=$(TZ=":America/New_York" date +'%U')
+          EVEN_WEEK=false
+          if [ $((WEEK % 2)) -eq 0 ]; then
+            EVEN_WEEK=true
+          fi
 
-          curl -s -X POST "${GITHUB_API_URL}/repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          -d "{\"body\": \"${COMMENT}\", \"path\": \"${FILE_NAME}\", \"commit_id\": \"${COMMIT_ID}\", \"subject_type\": \"file\"}"
-      
+          #
+          # Displaying those values is helpful when troubleshooting the logic below
+          #
+          echo "DAY: $DAY"
+          echo "HOUR: $HOUR"
+          echo "WEEK: $WEEK"
+          echo "EVEN_WEEK: $EVEN_WEEK"
+
+          #
+          # Add a CODE REVIEW comment to the PR if it's during the PR freeze hours
+          # (after 12pm on Monday, and before 3pm on Tuesday, every other week)
+          # Adjust this logic as necessary.
+          #
+          if [ "$DAY" == "Mon" ] && [ $HOUR -ge 12 ] || [ "$DAY" == "Tue" ] && [ $HOUR -lt 15 ] && [ "$EVEN_WEEK" == true ]; then
+            COMMIT_ID="${{ github.event.pull_request.head.sha }}"
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+
+            # Using a 'heredoc' to create a multi-line comment
+            IFS='' read -r -d '' COMMENT <<"EOF"
+            **⚠ PR to Major During Freeze ⚠**
+            
+            This PR to Major was created during the EnCompass PR freeze hours. It will
+            require additional review and approval from the EnCompass End-to-End team. 
+            Please ensure that these changes are critical and require immediate attention. 
+            If not, please consider resubmitting this PR after the freeze hours have ended. 
+
+            PRs to Major should be avoided during Monday 12pm - Tuesday 3pm eastern time,
+            every other week.
+
+            Thank you!
+
+            @danielreib, @chloejackson2010, @maryelenkw, @bblocker, @vsreddyn, @NickHirras
+
+            EOF
+
+            #
+            # Post the review comment to the PR
+            #
+            curl -s -X POST "${GITHUB_API_URL}/repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d "{\"body\": \"${COMMENT}\", \"path\": \"${FIRST_FILE}\", \"commit_id\": \"${COMMIT_ID}\", \"subject_type\": \"file\"}"
+          fi
