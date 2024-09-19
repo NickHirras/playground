@@ -1,27 +1,19 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   pull_request:
     branches: [ "main" ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "notify_about_prs_after_noon"
   notify_about_prs_after_noon:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write  # Grant permission to comment on PRs
       contents: read        # Allow read access to the repo content
     steps:
-      - name: set current env.DAY (Mon, Tue, ...) and env.HOUR (0..23) in eastern timezone
+      - name: Set Current env.DAY (Mon, Tue, ...) and env.HOUR (0..23) in Eastern Timezone
         shell: bash
         run: echo "DAY=$(TZ=":America/New_York" date +'%a')" >> $GITHUB_ENV && echo "HOUR=$(TZ=":America/New_York" date +'%H')" >> $GITHUB_ENV
 
@@ -30,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get the first file in the commit
+      - name: Find First File In Commit
         id: get_first_file
         run: |
           # Check if there are any files in the commit
