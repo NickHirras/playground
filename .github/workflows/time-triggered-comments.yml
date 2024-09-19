@@ -32,7 +32,7 @@ jobs:
         uses: nbaztec/add-pr-review-comment@v1
         with:
           comments: |
-            [{"path":"../../README.md","subject_type":"file","body":"This is a test comment","side":"RIGHT"}]
+            [{"path":"../../README.md","subject_type":"file","comments":"This is a test comment","side":"RIGHT"}]
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
           allow-repeats: false # This is the default
