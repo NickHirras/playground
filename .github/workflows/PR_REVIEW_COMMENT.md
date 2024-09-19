@@ -1,4 +1,4 @@
-**⚠ PR to Major During Freeze ⚠**
+**✋ PR to Major During Freeze ✋**
             
 This PR to Major was created during the EnCompass PR freeze hours. It will
 require additional review and approval from the EnCompass End-to-End team. 

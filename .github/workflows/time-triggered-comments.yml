@@ -64,8 +64,12 @@ jobs:
             COMMIT_ID="${{ github.event.pull_request.head.sha }}"
             PR_NUMBER="${{ github.event.pull_request.number }}"
 
+            #
             # Read in the contents of the file PR_REVIEW_COMMENT.md
-            COMMENT=$(<.github/workflows/PR_REVIEW_COMMENT.md)
+            # and escape newlines so we can use it in the JSON payload
+            #
+            RAW_COMMENT=$(<".github/workflows/PR_REVIEW_COMMENT.md")
+            COMMENT=$(echo "$RAW_COMMENT" | tr '\n' '\\n' | tr '\r' '')
 
             #
             # Post the review comment to the PR
