@@ -49,9 +49,17 @@ jobs:
             echo "first_file=$FIRST_FILE" >> $GITHUB_ENV
           fi
 
-      - name: Use the first file
+      - name: Add Review Comment
+        if: env.first_file != ''
         run: |
-          echo "The first file in the commit is: ${{ env.first_file }}"
+          FILE_NAME="${{ env.first_file }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          COMMENT="This is an automated comment for the file: ${FILE_NAME}"
+
+          curl -s -X POST "https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d "{\"body\": \"${COMMENT}\", \"path\": \"${FILE_NAME}\", \"position\": 1}"
       
       # - name: adding after-hours review comment
       #   uses: nbaztec/add-pr-review-comment@v1
