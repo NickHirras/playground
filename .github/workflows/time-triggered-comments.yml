@@ -45,7 +45,7 @@ jobs:
           fi
 
       - name: Add Review Comment During Freeze Hours
-        if: env.first_file != '' && env.HOUR > 12
+        if: env.first_file != '' && env.HOUR >= 12
         run: |
           FILE_NAME="${{ env.first_file }}"
           COMMIT_ID="${{ github.event.pull_request.head.sha }}"
