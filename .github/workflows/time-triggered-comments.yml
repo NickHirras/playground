@@ -39,11 +39,11 @@ jobs:
           FIRST_FILE=$(git diff-tree --no-commit-id --name-only -r $COMMIT_SHA | head -n 1)
           
           echo "First file: $FIRST_FILE"
-          echo "::set-output name=first_file::$FIRST_FILE"
+          echo "first_file=$FIRST_FILE" >> $GITHUB_ENV
 
       - name: Use the first file
         run: |
-          echo "The first file in the commit is: ${{ steps.get_first_file.outputs.first_file }}"
+          echo "The first file in the commit is: ${{ env.first_file }}"
       
       # - name: adding after-hours review comment
       #   uses: nbaztec/add-pr-review-comment@v1
