@@ -10,4 +10,4 @@ every other week.
 
 Thank you!
 
-@danielreib, @chloejackson2010, @maryelenkw, @bblocker, @vsreddyn, @NickHirras
+@rtgit001, @danielreib, @chloejackson2010, @maryelenkw, @bblocker, @vsreddyn, @NickHirras
