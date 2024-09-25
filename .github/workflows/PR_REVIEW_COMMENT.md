@@ -8,6 +8,4 @@ If not, please consider resubmitting this PR after the freeze hours have ended.
 PRs to Major should be avoided during Monday 12pm - Tuesday 3pm eastern time,
 every other week.
 
-Thank you!
-
 @bblocker, @bhanudobbala, @chloejackson2010, @danielreib, @maryelenkw, @NickHirras, @rtgit001, @vsreddyn
